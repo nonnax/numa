@@ -4,6 +4,8 @@
 require_relative 'numv'
 
 class Numa
+  class Response < Rack::Response; end
+
   attr :req, :res, :env
 
   def initialize(&block)
@@ -15,18 +17,26 @@ class Numa
     @res=Rack::Response.new(nil, 404)
     @env=env
     @once=false
-    instance_eval(&@block)
-    not_found{ res.write 'Not Found'}
-    res.finish
+    catch(:halt){
+      try_eval{ not_found{res.write 'Not Found'} }
+      return res.finish
+    }.call(env)
   end
 
   def on(u, **params)
     return unless match(u, **params)
-    res.status=200
     yield *@captures
-    res.status=404 if [res.body.empty?, res.status==200].all?
   end
 
+  def try_eval
+    res.status=200
+    instance_eval(&@block)
+    raise if [res.body.empty?, res.status==200].all?
+  rescue => @error
+    res.status=404
+    yield
+  end
+  
   def get;    yield if req.get? end
   def post;   yield if req.post? end
   def put;    yield if req.put? end
@@ -50,6 +60,8 @@ class Numa
   def session
     env['rack.session'] || raise('You need to set up a session middleware. `use Rack::Session`')
   end
-
+  def halt(app)
+    throw :halt, app 
+  end
   private def run_once; return if @once; @once=true; yield end
 end

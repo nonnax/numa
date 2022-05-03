@@ -19,6 +19,12 @@ AppB = Numa.new do
   end
 end
 
+TV = Numa.new do
+  get do
+    erb 'watch:tv:'+String(session[:name])+String(Numa.settings[:captures])+String(@error), title: 'tv time'
+  end
+end
+
 App = Numa.new do
   #
   # path test first
@@ -27,10 +33,10 @@ App = Numa.new do
     res.write "Testing background work thread: sum is #{$sum}"
   end
 
-  on '/tv' do |params|
-    get do
-      erb 'watch:tv:'+String(session[:name]), title: 'tv time'
-    end
+  on '/tv' do |*params|
+    Numa.settings[:captures]=params
+    session[:name]='TeeVee'
+    halt TV
   end
 
   #

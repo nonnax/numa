@@ -68,4 +68,8 @@ class TestApp < Test::Unit::TestCase
     assert_equal last_response.status, 404
     # assert_equal last_response.body, 'notto foundo'
   end
+  def test_outer_app
+    get '/inner'
+    assert_equal last_response.status, 200
+  end
 end
