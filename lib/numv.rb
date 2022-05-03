@@ -10,14 +10,14 @@ class Numa
   settings[:layout] = :layout
 
   module View
-
     PATH = Hash.new { |h, k| h[k] = File.expand_path("#{Numa.settings[:views]}/#{k}.erb", Dir.pwd) }
     CACHE = Thread.current[:_view_cache] = Hash.new { |h, k| h[k] = String(IO.read(k)) }
 
     def erb(doc, **locals)
       res.headers[Rack::CONTENT_TYPE] ||= 'text/html; charset=utf8;'
-      doc, layout = prepare(doc, **locals)
-      s = render(layout, **locals){ render(doc, **locals) }
+      s = prepare(doc, **locals){|doc, layout|
+        render(layout, **locals){ render(doc, **locals) }
+      }
       res.write s
     end
 
@@ -32,7 +32,7 @@ class Numa
       ldir =   locals.fetch(:layout, Numa.settings[:layout])
       doc  =   CACHE[PATH[doc]]  if doc.is_a?(Symbol)
       layout = CACHE[PATH[ldir]] rescue '<%=yield%>'
-      [String(doc), layout]
+      yield *[String(doc), layout]
     end
   end
   include View

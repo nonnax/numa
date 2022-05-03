@@ -4,6 +4,7 @@
 require_relative 'numv'
 
 class Numa
+  H = Hash.new{|h,k|h[k] = k.transform_keys(&:to_sym)}
   class Response < Rack::Response; end
 
   attr :req, :res, :env
@@ -42,13 +43,14 @@ class Numa
   def put;    yield if req.put? end
   def delete; yield if req.delete? end
 
-  def not_found; run_once{yield} if res.status == 404 end
+  def not_found; run_once{ yield } if res.status == 404 end
 
   def match(u, **params)
     req.path_info.match(pattern(u))
        .tap { |md|
-        cap = Array(md&.captures)
-        @captures = [cap, params.merge(req.params.transform_keys(&:to_sym)).values].flatten.compact
+          @captures = [
+            Array(md&.captures), params.merge(H[req.params]).values
+         ].flatten.compact
        }
   end
 

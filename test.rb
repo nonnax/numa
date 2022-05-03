@@ -17,13 +17,11 @@ class TestApp < Test::Unit::TestCase
 
   def test_root
     get '/'
-    # assert last_response.ok?
     assert_equal last_response.status, 302
   end
 
   def test_root_post
     post '/'
-    # assert last_response.ok?
     assert_equal last_response.status, 302
   end
 
