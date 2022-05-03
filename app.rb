@@ -13,15 +13,12 @@ Thread.new do # trivial example work thread
   end
 end
 
-AppB = Numa.new do
-  get do
-    res.write 'inner world'
-  end
-end
-
 TV = Numa.new do
   get do
-    erb 'watch:tv:'+String(session[:name])+String(Numa.settings[:captures])+String(@error), title: 'tv time'
+    on '/tv' do |params|
+      session[:name]='TeeVee'
+      erb 'watch:tv:'+String(session[:name])+String(params), title: 'tv time'
+    end
   end
 end
 
@@ -33,9 +30,7 @@ App = Numa.new do
     res.write "Testing background work thread: sum is #{$sum}"
   end
 
-  on '/tv' do |*params|
-    Numa.settings[:captures]=params
-    session[:name]='TeeVee'
+  on '/tv' do
     halt TV
   end
 
@@ -68,9 +63,5 @@ App = Numa.new do
 
   not_found do
     erb 'notto foundo'
-  end
-
-  on '/inner' do
-    halt AppB
   end
 end

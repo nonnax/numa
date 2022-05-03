@@ -38,7 +38,7 @@ class TestApp < Test::Unit::TestCase
     assert_equal last_response.status, 404 # no method
   end
 
-  def test_normal
+  def test_modular_app
     get '/tv'
     assert_equal last_response.status, 200
   end
@@ -67,9 +67,5 @@ class TestApp < Test::Unit::TestCase
     get '/adgads/asdfa'
     assert_equal last_response.status, 404
     # assert_equal last_response.body, 'notto foundo'
-  end
-  def test_outer_app
-    get '/inner'
-    assert_equal last_response.status, 200
   end
 end
