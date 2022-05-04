@@ -43,7 +43,7 @@ class Numa
   def put;    yield if req.put? end
   def delete; yield if req.delete? end
 
-  def not_found; run_once{ yield } if res.status == 404 end
+  def not_found; res.status = 404; run_once{ yield } end
 
   def match(u, **params)
     req.path_info.match(pattern(u))
