@@ -64,6 +64,6 @@ class TestApp < Test::Unit::TestCase
   def test_not_found
     get '/adgads/asdfa'
     assert_equal last_response.status, 404
-    # assert_equal last_response.body, 'notto foundo'
+    assert_equal last_response.body, 'notto foundo'
   end
 end

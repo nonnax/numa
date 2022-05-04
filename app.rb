@@ -70,7 +70,7 @@ App = Numa.new do
     res.redirect '/thread'
   end
 
-  not_found do
+  def default
     erb 'notto foundo'
   end
 end
