@@ -19,8 +19,7 @@ class Numa
     @env = env
     @once = false
     catch(:halt){
-      try_eval{ not_found{ res.write 'Not Found'} }
-      return res.finish
+      return try_eval{ not_found{ res.write 'Not Found'} }
     }.call(env)
   end
 
@@ -32,21 +31,23 @@ class Numa
   def try_eval
     res.status = 200
     instance_eval(&@block)
-    raise if [res.body.empty?, res.status == 200].all?
+    res.status=404 if [res.body.empty?, res.status == 200].all?
+    yield if res.status==404
+    res.finish
   rescue => @error
-    res.status = 404
-    yield
+    p @error
   end
 
   def get;    yield if req.get? end
+  def head;   yield if req.head? end
   def post;   yield if req.post? end
   def put;    yield if req.put? end
   def delete; yield if req.delete? end
 
-  def not_found;
-    run_once{
-      defined?(@default) ? instance_eval(&@default) : yield
-    } if res.status == 404
+  def not_found
+    if res.status == 404
+      defined?(@default) ? @default.call : yield       
+    end
   end
 
   def match(u, **params)
@@ -70,8 +71,8 @@ class Numa
   def halt(app)
     throw :halt, app
   end
+
   def default(&block)
-      @default=block
+    @default=block
   end
-  private def run_once; return if @once; @once = true; yield end
 end
