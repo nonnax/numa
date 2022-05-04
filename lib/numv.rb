@@ -14,7 +14,7 @@ class Numa
     CACHE = Thread.current[:_view_cache] = Hash.new { |h, k| h[k] = String(IO.read(k)) }
 
     def erb(doc, **locals)
-      res.headers[Rack::CONTENT_TYPE] ||= 'text/html; charset=utf8;'
+      res.headers[Rack::CONTENT_TYPE] ||= 'text/html; charset=utf-8;'
       s = prepare(doc, **locals){|doc, layout|
         render(layout, **locals){ render(doc, **locals) }
       }
