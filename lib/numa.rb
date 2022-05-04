@@ -32,10 +32,10 @@ class Numa
   def try_eval
     res.status = 200
     instance_eval(&@block)
-    raise if [res.body.empty?, res.status == 200].all?
+    res.status = 404 if [res.body.empty?, res.status == 200].all?
+    yield if res.status = 404
   rescue => @error
-    res.status = 404
-    yield
+    pp @error
   end
 
   def get;    yield if req.get? end
