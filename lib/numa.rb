@@ -33,9 +33,9 @@ class Numa
     res.status = 200
     instance_eval(&@block)
     raise if [res.body.empty?, res.status == 200].all?
-  rescue => @err
-    pp @err.message
-    yield if res.status = 404
+  rescue => @error
+    res.status = 404
+    yield
   end
 
   def get;    yield if req.get? end
@@ -45,7 +45,7 @@ class Numa
 
   def not_found;
     run_once{
-      respond_to?(:default) ? default : yield
+      defined?(@default) ? instance_eval(&@default) : yield
     } if res.status == 404
   end
 
@@ -70,6 +70,8 @@ class Numa
   def halt(app)
     throw :halt, app
   end
-
+  def default(&block)
+      @default=block
+  end
   private def run_once; return if @once; @once = true; yield end
 end
