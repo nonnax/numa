@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-04-30 11:09:50 +0800
-# notta unified mapper, boom!
+# notta unified mapper, a!
 require_relative 'numv'
 
 class Numa
@@ -31,8 +31,7 @@ class Numa
   def try_eval
     res.status = 200
     instance_eval(&@block)
-    res.status=404 if [res.body.empty?, res.status == 200].all?
-    yield if res.status==404
+    yield res.status = 404 if [res.body.empty?, res.status == 200].all?
     res.finish
   rescue => @error
     p @error
@@ -73,6 +72,6 @@ class Numa
   end
 
   def default(&block)
-    @default=block
+    @default = block
   end
 end
