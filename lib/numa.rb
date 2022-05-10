@@ -5,6 +5,8 @@ require_relative 'numv'
 
 class Numa
   H = Hash.new{|h,k|h[k] = k.transform_keys(&:to_sym)}
+  def self.settings;  @settings= Hash.new{|h,k| h[k]={} } end
+
   class Response < Rack::Response; end
 
   attr :req, :res, :env
@@ -31,7 +33,7 @@ class Numa
   def try_eval
     res.status = 200
     instance_eval(&@block)
-    yield res.status = 404 if [res.body.empty?, res.status == 200].all?
+    default{ res.write 'Not Found' }
     res.finish
   rescue => @error
     p @error
@@ -42,12 +44,6 @@ class Numa
   def post;   yield if req.post? end
   def put;    yield if req.put? end
   def delete; yield if req.delete? end
-
-  def not_found
-    if res.status == 404
-      defined?(@default) ? @default.call : yield       
-    end
-  end
 
   def match(u, **params)
     req.path_info.match(pattern(u))
@@ -71,7 +67,8 @@ class Numa
     throw :halt, app
   end
 
-  def default(&block)
-    @default = block
+  def default
+    yield(res.status=404) if res.status==200 && res.body.empty?
   end
+
 end
