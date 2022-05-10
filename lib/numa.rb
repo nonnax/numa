@@ -5,7 +5,7 @@ require_relative 'numv'
 
 class Numa
   H = Hash.new{|h,k|h[k] = k.transform_keys(&:to_sym)}
-  def self.settings;  @settings= Hash.new{|h,k| h[k]={} } end
+  def self.settings;  @settings ||= Hash.new{|h,k| h[k]={} } end
 
   class Response < Rack::Response; end
 

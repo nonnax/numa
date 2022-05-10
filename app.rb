@@ -4,6 +4,8 @@ require_relative 'lib/numa'
 
 Numa.settings[:layout]='layout_001'
 
+pp Numa.settings
+
 $sum = 0
 
 Thread.new do # trivial example work thread
