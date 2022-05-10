@@ -21,7 +21,7 @@ class Numa
     @env = env
     @once = false
     catch(:halt){
-      return try_eval{ not_found{ res.write 'Not Found'} }
+      return try_eval
     }.call(env)
   end
 
