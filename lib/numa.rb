@@ -48,15 +48,12 @@ class Numa
   def match(u, **params)
     req.path_info.match(pattern(u))
        .tap { |md|
-          @captures = [
-            Array(md&.captures), params.merge(H[req.params]).values
-         ].flatten.compact
+          @captures=( Array(md&.captures) + params.merge(H[req.params]).values ).compact if md
        }
   end
 
   def pattern(u)
-    u.gsub(/:\w+/) { '([^/?#]+)' }
-     .then { |comp| %r{^#{comp}/?$} }
+    u.gsub(/:\w+/, '([^/?#]+)').then{ |s| %r{^#{s}/?$} }
   end
 
   def session
