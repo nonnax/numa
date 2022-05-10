@@ -26,7 +26,7 @@ class Numa
   end
 
   def on(u, **params)
-    return unless @matched=match(u, **params)
+    return unless match(u, **params)
     yield *@captures
   end
 
