@@ -25,7 +25,7 @@ class Numa
       new_b = binding.dup.instance_eval do
         tap { opts.each { |k, v| local_variable_set k, v } }
       end
-      ERB.new(text, trim_mode: '%').result(new_b)
+      ERB.new(text).result(new_b)
     end
 
     def prepare(doc, **locals)
